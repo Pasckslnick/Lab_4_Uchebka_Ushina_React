@@ -1,0 +1,139 @@
+.checkout-page {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  color: #fff;
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.checkout-form-panel {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.checkout-summary-panel {
+  width: 350px;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 30px;
+  position: sticky;
+  top: 20px;
+}
+
+.checkout-title {
+  font-size: 1.8rem;
+  margin-top: 0;
+  margin-bottom: 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.glass-input {
+  width: 100%;
+  padding: 12px 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s;
+  box-sizing: border-box;
+}
+
+.glass-input:focus {
+  border-color: #00d2ff;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-pay {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-pay:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(74, 222, 128, 0.4);
+}
+
+.btn-pay:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.2);
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #4ade80;
+}
+
+/* Стили для успешного чека */
+.receipt {
+  max-width: 500px;
+  margin: 60px auto;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.receipt h2 {
+  color: #4ade80;
+  margin-top: 0;
+}
+
+.receipt p {
+  font-size: 1.1rem;
+  margin: 10px 0;
+}

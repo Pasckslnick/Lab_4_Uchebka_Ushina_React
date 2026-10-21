@@ -1,0 +1,160 @@
+.admin-orders-page {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 20px;
+  color: #fff;
+}
+
+.admin-orders-page .admin-title {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 30px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 40px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.glass-panel h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.order-card {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 15px;
+  padding: 20px;
+  transition: transform 0.3s, border-color 0.3s;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.order-id {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #00d2ff;
+}
+
+.order-date {
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+
+.order-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  padding: 5px 0;
+}
+
+.info-label {
+  opacity: 0.8;
+}
+
+.info-value {
+  font-weight: bold;
+}
+
+.info-value.discount {
+  color: #4ade80;
+}
+
+.info-value.total {
+  color: #00d2ff;
+  font-size: 1.1rem;
+}
+
+.badge-status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.badge-completed {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.badge-pending {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.order-items-title {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+
+.order-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.order-item-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.order-item-row:last-child {
+  border-bottom: none;
+}
+
+.item-name {
+  opacity: 0.9;
+}
+
+.item-price {
+  font-weight: bold;
+  color: #ddd;
+}
