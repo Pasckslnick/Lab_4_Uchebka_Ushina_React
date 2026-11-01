@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
-import { getAllCars, getAllCategories } from "../api/cars";
+import { getAllServices, getAllCategories } from "../api/cars";
 import "./css/Home.css";
 
 export default function Home() {
@@ -8,6 +8,7 @@ export default function Home() {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -16,14 +17,14 @@ export default function Home() {
     const loadData = async () => {
       try {
         setLoading(true);
-        const [carsData, catsData] = await Promise.all([
-          getAllCars(),
+        const [servicesData, catsData] = await Promise.all([
+          getAllServices(),
           getAllCategories()
         ]);
-        setProducts(carsData);
+        setProducts(servicesData);
         setCategories(catsData);
       } catch (err) {
-        console.error(err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -31,16 +32,16 @@ export default function Home() {
     loadData();
   }, []);
 
-  const handleCategoryChange = (categoryId) => {
+  const handleCategoryChange = (categoryName) => {
     setSelectedCategories((prev) =>
-      prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
+      prev.includes(categoryName)
+        ? prev.filter((name) => name !== categoryName)
+        : [...prev, categoryName]
     );
   };
 
   const filteredProducts = products.filter((p) => {
-    const matchCategory = selectedCategories.length === 0 || selectedCategories.includes(p.category_id);
+    const matchCategory = selectedCategories.length === 0 || selectedCategories.includes(p.category);
     const price = Number(p.price);
     const matchMin = minPrice === "" || price >= Number(minPrice);
     const matchMax = maxPrice === "" || price <= Number(maxPrice);
@@ -49,6 +50,7 @@ export default function Home() {
   });
 
   if (loading) return <h2 style={{ textAlign: "center", marginTop: "50px" }}>Загрузка каталога...</h2>;
+  if (error) return <h2 style={{ textAlign: "center", marginTop: "50px", color: "red" }}>{error}</h2>;
 
   return (
     <div className="catalog-layout">
@@ -59,11 +61,11 @@ export default function Home() {
           <h4>Категории</h4>
           <div className="filter-list">
             {categories.map((cat) => (
-              <label key={cat.id} className="filter-item">
+              <label key={cat.name} className="filter-item">
                 <input
                   type="checkbox"
-                  checked={selectedCategories.includes(cat.id)}
-                  onChange={() => handleCategoryChange(cat.id)}
+                  checked={selectedCategories.includes(cat.name)}
+                  onChange={() => handleCategoryChange(cat.name)}
                 />
                 <span>{cat.name}</span>
               </label>
@@ -96,7 +98,7 @@ export default function Home() {
       <main className="catalog-main">
         <div className="products-grid">
           {filteredProducts.length === 0 ? (
-            <p>Машины не найдены</p>
+            <p>Услуги не найдены</p>
           ) : (
             filteredProducts.map((p, i) => (
               <div key={p.id} style={{ animationDelay: `${i * 0.08}s` }}>

@@ -6,7 +6,7 @@ import "./css/AdminDashboard.css";
 export default function AdminDashboard() {
   const { user } = useContext(userContext);
 
-  if (!user || user.role_id !== 1) {
+  if (!user || user.role !== "ADMIN") {
     return (
       <div className="admin-denied">
         <h2>Доступ запрещен</h2>
@@ -24,7 +24,7 @@ export default function AdminDashboard() {
 
       <div className="admin-grid">
         <Link to="/admin/cars" className="admin-card">
-          <h3>Автомобили</h3>
+          <h3>Услуги</h3>
         </Link>
 
         <Link to="/admin/users" className="admin-card">

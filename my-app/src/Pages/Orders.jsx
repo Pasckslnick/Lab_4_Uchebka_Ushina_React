@@ -11,22 +11,25 @@ export default function MyOrders() {
 
   useEffect(() => {
     async function fetchOrders() {
-      if (!token) return;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        setLoading(true);
-        const response = await fetch("http://localhost:3001/api/get_user_payments", {
+        const response = await fetch("http://localhost:3001/api/orders/my", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (response.ok) {
-          const data = await response.json();
-          setOrders(data);
-        }
-      } catch (err) {
-        setError("Не удалось загрузить историю заказов");
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Ошибка загрузки заказов");
+        setOrders(data);
+      } catch (requestError) {
+        setError(requestError.message);
       } finally {
         setLoading(false);
       }
     }
+
     fetchOrders();
   }, [token]);
 
@@ -45,66 +48,42 @@ export default function MyOrders() {
         <h1>Мои заказы</h1>
         <Link to="/profile" className="back-link">← Назад в профиль</Link>
       </div>
-
-      {loading ? (
-        <p>Загрузка заказов...</p>
-      ) : error ? (
+      {loading ? <p>Загрузка заказов...</p> : error ? (
         <p style={{ color: "red" }}>{error}</p>
       ) : orders.length === 0 ? (
-        <div className="glass-panel" style={{ textAlign: "center", padding: "50px" }}>
-          <p>У вас пока нет оформленных заказов.</p>
-          <Link to="/home" className="btn-primary" style={{ display: "inline-block", marginTop: "20px", textDecoration: "none" }}>
-            Перейти в каталог
-          </Link>
-        </div>
+        <div className="glass-panel"><p>У вас пока нет оформленных заказов.</p></div>
       ) : (
         <div className="orders-list">
           {orders.map((order) => (
-            <div key={order.id} className="order-card">
+            <div key={`${order.created_at}-${order.delivery_date}`} className="order-card">
               <div className="order-header">
                 <div>
-                  <span className="order-id">Заказ #{order.id}</span>
-                  <span className="order-date">
-                    {new Date(order.payment_date).toLocaleString("ru-RU")}
-                  </span>
+                  <span className="order-id">Заказ от {new Date(order.created_at).toLocaleString("ru-RU")}</span>
+                  <span className="order-date">Доставка: {new Date(order.delivery_date).toLocaleDateString("ru-RU")}</span>
                 </div>
-                <span className={`badge-status ${order.payment_status === 'completed' ? 'badge-completed' : 'badge-pending'}`}>
-                  {order.payment_status === 'completed' ? 'Оплачен' : order.payment_status}
-                </span>
+                <span className="badge-status badge-pending">{order.status}</span>
               </div>
-
               <div className="order-info">
                 <div className="info-item">
+                  <span className="info-label">Адрес:</span>
+                  <span className="info-value">{order.delivery_address}</span>
+                </div>
+                <div className="info-item">
                   <span className="info-label">Сумма:</span>
-                  <span className="info-value">{Number(order.total_amount).toLocaleString()} ₽</span>
+                  <span className="info-value">{Number(order.total_amount).toLocaleString("ru-RU")} ₽</span>
                 </div>
-                {Number(order.discount_applied) > 0 && (
-                  <div className="info-item">
-                    <span className="info-label">Скидка:</span>
-                    <span className="info-value discount">
-                      -{Number(order.discount_applied).toLocaleString()} ₽
-                    </span>
-                  </div>
-                )}
               </div>
-
-              {order.items && order.items.length > 0 && (
-                <div className="order-items">
-                  <h4>Состав заказа:</h4>
-                  <ul>
-                    {order.items.map((item, idx) => (
-                      <li key={idx}>
-                        <span className="item-name">
-                          {item.name} <span className="item-qty">(x{item.quantity})</span>
-                        </span>
-                        <span className="item-price">
-                          {Number(item.price_at_purchase).toLocaleString()} ₽
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              <div className="order-items">
+                <h4>Состав заказа:</h4>
+                <ul>
+                  {order.items.map((item, index) => (
+                    <li key={`${item.service}-${index}`}>
+                      <span className="item-name">{item.service} (x{item.quantity})</span>
+                      <span className="item-price">{Number(item.price).toLocaleString("ru-RU")} ₽</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           ))}
         </div>

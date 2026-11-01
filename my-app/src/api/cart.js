@@ -1,54 +1,95 @@
-const API_URL = 'http://localhost:3001/api';
+import { API_URL } from './auth';
 
-export async function getUserCart(token) {
-    const response = await fetch(`${API_URL}/get_user_cart`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (!response.ok) throw new Error('Ошибка загрузки корзины');
-    return await response.json();
+function authHeaders(token) {
+    return { Authorization: `Bearer ${token}` };
 }
 
-export async function addToCart(service_id, token) {
-    const response = await fetch(`${API_URL}/add_to_cart`, {
-        method: 'POST',
+async function request(path, token, options = {}) {
+    const response = await fetch(`${API_URL}${path}`, {
+        ...options,
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            ...authHeaders(token),
+            ...options.headers,
         },
-        body: JSON.stringify({ service_id, quantity: 1 })
     });
-    if (!response.ok) throw new Error('Ошибка добавления в корзину');
-    return await response.json();
-}
+    const data = await response.json().catch(() => ({}));
 
-export async function removeFromCart(cart_item_id, token) {
-    const response = await fetch(`${API_URL}/remove_from_cart/${cart_item_id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (!response.ok) throw new Error('Ошибка удаления');
-    return await response.json();
-}
+    if (!response.ok) {
+        throw new Error(data.error || 'Ошибка запроса корзины');
+    }
 
-export async function checkout(token) {
-    const response = await fetch(`${API_URL}/checkout`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'Ошибка оформления');
     return data;
 }
 
-export async function updateCartQuantity(cart_item_id, quantity, token) {
-    const response = await fetch(`http://localhost:3001/api/update_cart_quantity/${cart_item_id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ quantity })
+export function getUserCart(token) {
+    return request('/cart', token);
+}
+
+export function addToCart(serviceName, token, quantity = 1) {
+    if (!serviceName?.trim() || !Number.isInteger(quantity) || quantity <= 0) {
+        throw new Error('Укажите услугу и положительное количество');
+    }
+
+    return request('/cart/items', token, {
+        method: 'POST',
+        body: JSON.stringify({ service_name: serviceName.trim(), quantity }),
     });
-    if (!response.ok) throw new Error('Ошибка изменения количества');
-    return await response.json();
+}
+
+export function removeFromCart(serviceName, token) {
+    return request(`/cart/items/${encodeURIComponent(serviceName)}`, token, {
+        method: 'DELETE',
+    });
+}
+
+export function updateCartQuantity(serviceName, quantity, token) {
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+        throw new Error('Количество должно быть положительным целым числом');
+    }
+
+    return request(`/cart/items/${encodeURIComponent(serviceName)}`, token, {
+        method: 'PUT',
+        body: JSON.stringify({ quantity }),
+    });
+}
+
+export function clearCart(token) {
+    return request('/cart', token, { method: 'DELETE' });
+}
+
+export function checkout(token, deliveryAddress, deliveryDate) {
+    if (!deliveryAddress?.trim()) {
+        throw new Error('Укажите адрес доставки');
+    }
+
+    if (!deliveryDate) {
+        throw new Error('Укажите дату доставки');
+    }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(deliveryDate)) {
+        throw new Error('Некорректная дата доставки');
+    }
+
+    const [year, month, day] = deliveryDate.split('-').map(Number);
+    const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    const today = new Date();
+    const todayValue = Date.UTC(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+    );
+
+    if (month < 1 || month > 12 || day < 1 || day > daysInMonth ||
+        Date.UTC(year, month - 1, day) < todayValue) {
+        throw new Error('Дата доставки не может быть в прошлом или некорректна');
+    }
+
+    return request('/orders/checkout', token, {
+        method: 'POST',
+        body: JSON.stringify({
+            delivery_address: deliveryAddress.trim(),
+            delivery_date: deliveryDate,
+        }),
+    });
 }

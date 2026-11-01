@@ -5,11 +5,11 @@ import { getUserCart, removeFromCart as apiRemove, updateCartQuantity } from "..
 export const cartContext = createContext();
 
 export function CartProvider({ children }) {
-  const [cart, setCart] = useState({ items: [], total_price: 0 });
+  const [cart, setCart] = useState({ items: [], total: 0 });
   const { token } = useContext(userContext);
 
   const fetchCart = async () => {
-    if (!token) return setCart({ items: [], total_price: 0 });
+    if (!token) return setCart({ items: [], total: 0 });
     try {
       const data = await getUserCart(token);
       setCart(data);
@@ -18,23 +18,24 @@ export function CartProvider({ children }) {
 
   useEffect(() => { fetchCart(); }, [token]);
 
-  const removeFromCart = async (cart_item_id) => {
+  const removeFromCart = async (serviceName) => {
     try {
-      await apiRemove(cart_item_id, token);
+      await apiRemove(serviceName, token);
       await fetchCart();
     } catch (err) { alert(err.message); }
   };
 
-  const decreaseQuantity = async (cart_item_id, currentQuantity) => {
+  const decreaseQuantity = async (serviceName, currentQuantity) => {
     try {
-      await updateCartQuantity(cart_item_id, currentQuantity - 1, token);
+      if (currentQuantity <= 1) return;
+      await updateCartQuantity(serviceName, currentQuantity - 1, token);
       await fetchCart();
     } catch (err) { alert(err.message); }
   };
 
-  const increaseQuantity = async (cart_item_id, currentQuantity) => {
+  const increaseQuantity = async (serviceName, currentQuantity) => {
     try {
-      await updateCartQuantity(cart_item_id, currentQuantity + 1, token);
+      await updateCartQuantity(serviceName, currentQuantity + 1, token);
       await fetchCart();
     } catch (err) { alert(err.message); }
   };

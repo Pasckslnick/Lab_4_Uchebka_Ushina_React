@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import { userContext } from "./Context/UserContext";
+import { register } from "../api/auth";
 import "./css/Auth.css";
 
 export default function Register() {
@@ -10,6 +11,7 @@ export default function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -29,22 +31,12 @@ export default function Register() {
     try {
       setLoading(true);
 
-      const response = await fetch('http://localhost:3001/api/add_user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-          name: username,
-          role: 2
-        })
+      await register({
+        full_name: username,
+        email,
+        password,
+        phone,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Ошибка регистрации");
-      }
 
       await login(email, password);
       
@@ -90,6 +82,15 @@ export default function Register() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required 
+        />
+        <label htmlFor="phone">Телефон:</label>
+        <input
+          type="tel"
+          id="phone"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          pattern="\+?[0-9 ()-]{7,20}"
+          required
         />
 
         <label htmlFor="confirm-password">Подтвердите пароль:</label>

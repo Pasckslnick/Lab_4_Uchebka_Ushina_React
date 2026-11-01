@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import { login as apiLogin } from "../../api/auth.js";
+import { getCurrentUser, login as apiLogin } from "../../api/auth.js";
 
 export const userContext = createContext();
 
@@ -9,9 +9,7 @@ export function UserProvider({ children }) {
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
-    if (savedUser && token) {
-      setUser(JSON.parse(savedUser));
-    }
+    if (savedUser && token) setUser(JSON.parse(savedUser));
   }, [token]);
 
   const login = async (email, password) => {
@@ -29,8 +27,19 @@ export function UserProvider({ children }) {
     localStorage.removeItem("user");
   };
 
+  const refreshUser = async () => {
+    if (!token) return;
+    try {
+      const data = await getCurrentUser(token);
+      setUser(data);
+      localStorage.setItem("user", JSON.stringify(data));
+    } catch {
+      logout();
+    }
+  };
+
   return (
-    <userContext.Provider value={{ user, token, login, logout }}>
+    <userContext.Provider value={{ user, token, login, logout, refreshUser }}>
       {children}
     </userContext.Provider>
   );

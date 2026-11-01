@@ -1,80 +1,46 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { userContext } from "./Context/UserContext";
 import "./css/Profile.css";
-import { Link, useNavigate } from "react-router-dom";
 
 export default function Profile() {
-  const { user, token } = useContext(userContext);
-  const [orders, setOrders] = useState([]);
-  const [error, setError] = useState(null);
+  const { user, logout } = useContext(userContext);
   const navigate = useNavigate();
-
-  const { logout } = useContext(userContext);
 
   if (!user) {
     return (
       <div className="profile-container">
-        <h2>Вы не авторизованы</h2>
-        <p>Пожалуйста, войдите в систему, чтобы просмотреть профиль.</p>
+        <h2>Личный кабинет доступен после авторизации</h2>
+        <button className="view-orders-button" onClick={() => navigate("/login")}>Войти</button>
       </div>
     );
   }
 
+  function handleLogout() {
+    logout();
+    navigate("/");
+  }
+
   return (
-    <div className="profile-container">
+    <main className="profile-container">
       <h1>Личный кабинет</h1>
 
-      <div className="profile-info">
-        <h2>Ваши данные</h2>
-        <div className="info-row">
-          <span className="info-label">Статус:</span>
-          {user.role_id === 1 ? (
-            <button
-              onClick={() => navigate("/admin/")}
-              className="admin-button"
-            >
-              <span>Администратор</span>
-            </button>
-          ) : (
-            <span className="info-value">Клиент</span>
-          )}
-        </div>
-        <div className="info-row">
-          <span className="info-label">Имя:</span>
-          <span className="info-value">{user.full_name}</span>
-        </div>
-        <div className="info-row">
-          <span className="info-label">Email:</span>
-          <span className="info-value">{user.email}</span>
-        </div>
-        <div className="info-row">
-          <span className="info-label">Персональная скидка:</span>
-          <span className="info-value discount-value">
-            {user.personal_discount_percent}%
-          </span>
-        </div>
-      </div>
+      <section className="profile-info">
+        <h2>Информация об аккаунте</h2>
+        <div className="info-row"><span className="info-label">ФИО</span><span className="info-value">{user.full_name}</span></div>
+        <div className="info-row"><span className="info-label">Роль</span><span className="info-value">{user.role === "ADMIN" ? "Администратор" : "Пользователь"}</span></div>
+        <div className="info-row"><span className="info-label">Email</span><span className="info-value">{user.email}</span></div>
+        <div className="info-row"><span className="info-label">Телефон</span><span className="info-value">{user.phone}</span></div>
+        <div className="info-row"><span className="info-label">Адрес</span><span className="info-value">{user.default_address || "Не указан"}</span></div>
+      </section>
 
-      <div className="profile-orders">
-
-        <ul className="orders-list">
-          <button
-            onClick={() => navigate("/orders/")}
-            className="view-orders-button"
-          >
-            <span>Посмотреть все заказы</span>
-          </button>
-        </ul>
+      <div className="profile-actions">
+        <button className="view-orders-button" onClick={() => navigate("/settings")}>Изменить данные и пароль</button>
+        <button className="view-orders-button" onClick={() => navigate("/orders")}>Мои заказы</button>
+        <button className="view-orders-button" onClick={() => navigate("/reviews")}>Отзывы</button>
+        {user.role === "ADMIN" && <button className="admin-button" onClick={() => navigate("/admin/")}>Панель администратора</button>}
+        <button className="btn-logout" onClick={handleLogout}>Выйти</button>
       </div>
-      <button
-        className="btn-logout"
-        onClick={() => {
-          logout();
-          navigate("/");
-        }}
-      >
-        Выйти
-      </button>
-    </div>
+    </main>
   );
 }

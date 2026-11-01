@@ -1,5 +1,11 @@
 # React + Vite
 
+## Восстановление пароля
+
+Для отправки кодов восстановления через Gmail добавьте в `backend/.env`:
+
+`SMTP_PASSWORD` должен быть паролем приложения Google, а не обычным паролем аккаунта.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
